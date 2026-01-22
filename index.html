@@ -1,185 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Cinema</title>
-<link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: radial-gradient(circle at center, #111 0%, #000 70%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #f5d76e;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif;
-  }
-  h1 {
-    margin-top: 60px;
-    font-family: 'Limelight', cursive;
-    font-size: 96px;
-    letter-spacing: 8px;
-    text-transform: uppercase;
-    color: #f7c873;
-    text-shadow:
-      0 0 10px rgba(255, 180, 80, 0.6),
-      0 0 25px rgba(255, 140, 0.5),
-      0 0 40px rgba(255, 100, 0.3);
-    z-index: 2;
-  }
+  <meta charset="UTF-8">
+  <title>Cinema Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #111 0%, #000 70%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f5d76e;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
 
-  .lamp {
-    position: absolute;
-    top: 40px;
-    width: 40px;
-    height: 40px;
-    background: radial-gradient(circle, #ffd27d 0%, #ff9f1c 40%, #cc6b00 70%);
-    border-radius: 50%;
-    box-shadow:
-      0 0 30px rgba(255, 160, 60, 0.9),
-      0 0 80px rgba(255, 120, 0.6),
-      0 0 140px rgba(255, 100, 0.4);
-  }
-  .lamp::after {
-    content: "";
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 300px;
-    background: radial-gradient(circle at top, rgba(255,160,60,0.4), rgba(255,120,0.15), transparent 70%);
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  }
-  .lamp.left { left: 80px; }
-  .lamp.right { right: 80px; }
+    h1 {
+      margin-top: 40px;
+      font-family: 'Limelight', cursive;
+      font-size: 80px;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #f7c873;
+      text-shadow: 0 0 10px rgba(255, 180, 80, 0.6), 0 0 25px rgba(255, 140, 0.5);
+      z-index: 2;
+    }
 
-  #boxoffice-viz {
-    width: 90%;
-    max-width: 1000px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(255, 215, 120, 0.3);
-    border-radius: 20px;
-    padding: 30px;
-    color: #f7c873;
-  }
+    /* --- Research Section --- */
+    .search-container {
+      width: 90%;
+      max-width: 1000px;
+      background: rgba(255, 215, 120, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 215, 120, 0.2);
+    }
 
-  #boxoffice-viz h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-family: 'Limelight', cursive;
-    font-size: 40px;
-    color: #f7c873;
-  }
+    .search-container input, .search-container select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #f7c873;
+      background: #111;
+      color: #f7c873;
+      outline: none;
+      flex: 1;
+      min-width: 200px;
+    }
 
-  .slider-container {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .year-display {
-    font-size: 44px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  input[type=range] {
-    width: 100%;
-  }
+    /* --- Visualization Sections --- */
+    #boxoffice-viz, #trends-viz {
+      width: 90%;
+      max-width: 1000px;
+      margin-bottom: 40px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255, 215, 120, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+    }
 
-  .films-panel {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    margin-top: 10px;
-  }
+    h2 {
+      text-align: center;
+      font-family: 'Limelight', cursive;
+      color: #f7c873;
+    }
 
-  .film {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid rgba(255, 215, 120, 0.25);
-    border-radius: 14px;
-    background: rgba(0,0,0,0.5);
-    position: relative;
-    overflow: hidden;
-  }
+    .controls-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-  .film:hover {
-    border-color: rgba(255, 215, 120, 0.8);
-  }
+    .year-display { font-size: 54px; font-family: 'Limelight'; color: #f7c873; }
 
-  .poster {
-    width: 120px;
-    height: 170px;
-    border-radius: 10px;
-    margin-right: 20px;
-    background-size: cover;
-    background-position: center;
-  }
+    .films-panel { display: grid; grid-template-columns: 1fr; gap: 15px; }
 
-  .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+    .film {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 215, 120, 0.2);
+      border-radius: 14px;
+      background: rgba(20,20,20,0.8);
+      position: relative;
+    }
 
-  .film-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: #f7c873;
-  }
+    .poster { width: 80px; height: 110px; border-radius: 8px; margin-right: 20px; background-size: cover; background-position: center; }
+    
+    .film-title { font-size: 20px; font-weight: bold; }
 
-  .meta {
-    font-size: 16px;
-    color: #f0d9a7;
-  }
+    .hover-details {
+      position: absolute; right: 10px; background: #000; border: 1px solid #f7c873;
+      padding: 10px; display: none; z-index: 10; border-radius: 8px;
+    }
+    .film:hover .hover-details { display: block; }
 
-  .hover-details {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    background: rgba(0,0,0,0.85);
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,215,120,0.4);
-    display: none;
-    text-align: left;
-    font-size: 14px;
-    max-width: 280px;
-  }
-
-  .hover-details div {
-    margin-bottom: 4px;
-  }
-
-  .film:hover .hover-details {
-    display: block;
-  }
-</style>
+    /* Lamps */
+    .lamp { position: absolute; top: 40px; width: 30px; height: 30px; background: #ff9f1c; border-radius: 50%; box-shadow: 0 0 50px #ff9f1c; }
+    .lamp.left { left: 40px; } .lamp.right { right: 40px; }
+  </style>
 </head>
-
 <body>
+
   <div class="lamp left"></div>
   <div class="lamp right"></div>
+  
   <h1>Cinema</h1>
 
+  <div class="search-container">
+    <input type="text" id="search-director" placeholder="Filter by Director...">
+    <select id="filter-genre">
+      <option value="All">All Genres</option>
+      <option value="Action">Action</option>
+      <option value="Animation">Animation</option>
+      <option value="Science-fiction">Science-fiction</option>
+      <option value="Fantasy">Fantasy</option>
+    </select>
+  </div>
+
   <section id="boxoffice-viz">
-    <h2>Top 5 films (2013–2023)</h2>
-
-    <div class="slider-container">
+    <h2>Annual Rankings</h2>
+    <div class="controls-row">
       <div class="year-display" id="boxoffice-year">2013</div>
-      <input type="range" min="2013" max="2023" step="1" value="2013" id="boxoffice-slider">
+      <input type="range" min="2013" max="2023" step="1" value="2013" id="boxoffice-slider" style="width: 100%">
     </div>
-
     <div class="films-panel" id="boxoffice-films"></div>
   </section>
 
-<script>
-  (function () {
+  <section id="trends-viz">
+    <h2>Box Office Trends ($ Billions)</h2>
+    <canvas id="trendChart"></canvas>
+  </section>
+
+  <script>
     const enrichedData = [
       {"year":2013,"rank":1,"title":"Frozen","boxOffice":"1280802282","genre":"Animation","country":"États-Unis","director":"Chris Buck, Jennifer Lee","directorGender":"Homme / Femme","poster":"https://image.tmdb.org/t/p/w500/kgwjIb1CkFCftymFGOtdLlOrWYv.jpg"},
       {"year":2013,"rank":2,"title":"Iron Man 3","boxOffice":"1214811252","genre":"Action / Super-héros","country":"États-Unis","director":"Shane Black","directorGender":"Homme","poster":"https://image.tmdb.org/t/p/w500/qhPtAc1TKbMPqNvcdXSOn9Bn7hZ.jpg"},
@@ -242,43 +204,91 @@
     const yearDisplay = document.getElementById("boxoffice-year");
     const panel = document.getElementById("boxoffice-films");
 
+    // Search inputs
+    const sDirector = document.getElementById("search-director");
+    const sGenre = document.getElementById("filter-genre");
+
     function formatBoxOffice(value) {
-      return '$' + parseInt(value).toLocaleString('en-US');
+      return '$' + (parseInt(value) / 1000000000).toFixed(2) + ' B';
     }
 
-    function update(year) {
+    function update() {
+      const year = slider.value;
+      const directorQuery = sDirector.value.toLowerCase();
+      const genreQuery = sGenre.value;
+
       yearDisplay.textContent = year;
       panel.innerHTML = "";
 
-      const films = enrichedData.filter(d => d.year == year);
+      const films = enrichedData.filter(d => {
+        const matchYear = d.year == year;
+        const matchDir = d.director.toLowerCase().includes(directorQuery);
+        const matchGenre = genreQuery === "All" || d.genre.includes(genreQuery);
+        return matchYear && matchDir && matchGenre;
+      });
+
+      if(films.length === 0) panel.innerHTML = "<p style='text-align:center'>No films found for these filters.</p>";
 
       for (const film of films) {
-        const poster = film.poster || "https://via.placeholder.com/120x170?text=No+Poster";
-
         panel.innerHTML += `
           <div class="film">
-            <div class="poster" style="background-image:url('${poster}')"></div>
+            <div class="poster" style="background-image:url('${film.poster}')"></div>
             <div class="info">
               <div class="film-title">#${film.rank} ${film.title}</div>
-              <div class="meta">Genre: ${film.genre}</div>
-              <div class="meta">Réalisateur: ${film.director}</div>
+              <div style="color: #ccc; font-size: 0.9em">${film.genre} | ${film.director}</div>
+              <div style="color: #f7c873; font-weight: bold">${formatBoxOffice(film.boxOffice)}</div>
             </div>
             <div class="hover-details">
-              <div><b>Genre :</b> ${film.genre}</div>
-              <div><b>Réalisateur :</b> ${film.director}</div>
-              <div><b>Genre du réalisateur :</b> ${film.directorGender}</div>
-              <div><b>Pays :</b> ${film.country}</div>
-              <div><b>Box Office :</b> ${formatBoxOffice(film.boxOffice)}</div>
+              <div><b>Country:</b> ${film.country}</div>
+              <div><b>Director Gender:</b> ${film.directorGender}</div>
+              <div><b>Exact Total:</b> $${parseInt(film.boxOffice).toLocaleString()}</div>
             </div>
           </div>
         `;
       }
     }
 
-    slider.addEventListener("input", e => update(e.target.value));
-    update(slider.value);
+    // Chart.js Setup
+    function initChart() {
+      const years = [...new Set(enrichedData.map(d => d.year))].sort();
+      const totals = years.map(y => {
+        return enrichedData.filter(d => d.year === y)
+                           .reduce((sum, f) => sum + parseInt(f.boxOffice), 0) / 1000000000;
+      });
 
-  })();
-</script>
+      const ctx = document.getElementById('trendChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [{
+            label: 'Total Revenue of Top 5 Films',
+            data: totals,
+            borderColor: '#f7c873',
+            backgroundColor: 'rgba(247, 200, 115, 0.2)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 6,
+            pointBackgroundColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#f7c873' } } },
+          scales: {
+            y: { ticks: { color: '#f7c873' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+            x: { ticks: { color: '#f7c873' }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // Event listeners
+    [slider, sDirector, sGenre].forEach(el => el.addEventListener("input", update));
+
+    // Initial Load
+    update();
+    initChart();
+  </script>
 </body>
 </html>
