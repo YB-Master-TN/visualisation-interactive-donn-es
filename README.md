@@ -1,2 +1,2 @@
 # visualisation-interactive-donn-es
-3ème repository pour le cours visualisation, analyse et gestion (semaine intensive)
+Site visualisation rahayu Utaminingsih et Yman Bresler : https://coursvis.lovable.app/ 
